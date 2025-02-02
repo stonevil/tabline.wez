@@ -12,6 +12,7 @@ return {
         end
       end
     end
+    cwd = ' ' .. cwd
     return cwd or ''
   end,
 }
