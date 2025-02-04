@@ -11,8 +11,10 @@ return {
   },
   update = function(window, opts)
     local cwd = ''
+    local folder_type = ''
 
     local cwd_uri = window:active_pane():get_current_working_dir()
+
     if cwd_uri then
       cwd = cwd_uri.file_path
       if opts.max_length ~= 0 then
@@ -20,11 +22,9 @@ return {
           cwd = cwd:sub(1, opts.max_length - 1) .. '…'
         end
       end
-    end
 
-    local function check_for_status()
       -- capture git status call
-      local cmd = 'git -C ' .. cwd_uri.file_path .. ' status --porcelain -b 2> /dev/null'
+      local cmd = 'git -C ' .. cwd .. ' status --porcelain -b 2> /dev/null'
       local handle = assert(io.popen(cmd, 'r'), '')
       -- output contains empty line at end (removed by iterlines)
       local output = assert(handle:read('*a'))
@@ -32,13 +32,11 @@ return {
       handle:close()
 
       if output ~= '' then
-        return 'git'
+        folder_type = 'git'
       else
-        return ''
+        folder_type = ''
       end
     end
-
-    local folder_type = check_for_status()
 
     if opts.icons_enabled and opts.folder_to_icon then
       local icon = opts.folder_to_icon[(folder_type):lower()] or opts.folder_to_icon.default
