@@ -24,14 +24,14 @@ return {
       end
 
       -- capture git status call
-      local cmd = 'git -C ' .. cwd .. ' status --porcelain -b 2> /dev/null'
+      local cmd = 'git -C ' .. cwd .. ' rev-parse --is-inside-work-tree 2> /dev/null'
       local handle = assert(io.popen(cmd, 'r'), '')
       -- output contains empty line at end (removed by iterlines)
-      local output = assert(handle:read('*a'))
+      local output = (assert(handle:read('*a')):gsub('[\n\r]', ''))
       -- close io
       handle:close()
 
-      if output ~= '' then
+      if output == 'true' then
         folder_type = 'git'
       else
         folder_type = ''
